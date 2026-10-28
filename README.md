@@ -104,12 +104,6 @@ Com o [clasp](https://github.com/google/clasp) dá para enviar a pasta `src/` di
 
 Google Apps Script (JavaScript V8) · Google Sheets · HtmlService · Chart.js 4 · MailApp
 
-## Próximos passos
-
-- Versão do painel em Power BI a partir do CSV fictício.
-- Consultas SQL equivalentes aos indicadores principais.
-- Tabela de modelos e preços como aba da planilha (dimensão), editável sem mexer no código.
-
 ---
 
 Autor: Filipe Edwards
