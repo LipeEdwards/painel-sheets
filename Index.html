@@ -1,0 +1,1864 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #EEF1F0;
+      --surface: #FFFFFF;
+      --surface-2: #F5F7F6;
+      --ink: #18211E;
+      --muted: #5B6863;
+      --line: #D6DDDA;
+      --accent: #0E7C6B;
+      --destaque: rgba(14, 124, 107, .08);
+
+      --teste: #0E7C6B;
+      --reuso: #7CC4B5;
+      --manut: #C2560F;
+      --suporte: #5B4FC4;
+      --meta: #7C8984;
+      --up: #15803D;
+      --down: #B42318;
+
+      /* Faixa de leitura (o "visor" da bancada) */
+      --visor-bg: #15302A;
+      --visor-ink: #EAF2EF;
+      --visor-muted: #9DB7AF;
+      --visor-linha: rgba(234, 242, 239, .14);
+      --teste-claro: #4FD1B5;
+      --manut-claro: #F5A06A;
+      --suporte-claro: #AFA4F7;
+
+      --raio: 14px;
+      --raio-sm: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111715;
+        --surface: #19211F;
+        --surface-2: #1F2926;
+        --ink: #E3EAE7;
+        --muted: #95A29D;
+        --line: #2C3734;
+        --accent: #34B39C;
+        --destaque: rgba(52, 179, 156, .12);
+
+        --teste: #34B39C;
+        --reuso: #1F6E61;
+        --manut: #F08A4B;
+        --suporte: #9B8FF0;
+        --meta: #74817C;
+        --up: #4ADE80;
+        --down: #F87171;
+
+        --visor-bg: #0D2420;
+        --visor-linha: rgba(234, 242, 239, .10);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.5 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-variant-numeric: tabular-nums;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .pagina {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 24px 56px;
+    }
+
+    /* ---------- Topo ---------- */
+    .topo {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -.015em;
+    }
+
+    .sub {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .campo {
+      display: grid;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    select,
+    input[type="search"] {
+      min-height: 38px;
+      padding: 7px 12px;
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: var(--raio-sm);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    input[type="search"] { min-width: 240px; }
+
+    select:hover,
+    input[type="search"]:hover { border-color: var(--muted); }
+
+    select:focus-visible,
+    input:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      font-size: 14px;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .check input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      margin: 0;
+    }
+
+    /* ---------- Abas ---------- */
+    .abas {
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 24px;
+      scrollbar-width: none;
+    }
+
+    .abas::-webkit-scrollbar { display: none; }
+
+    .abas button {
+      appearance: none;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      font: inherit;
+      font-size: 14.5px;
+      font-weight: 500;
+      padding: 10px 14px;
+      margin-bottom: -1px;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .abas button:hover { color: var(--ink); }
+
+    .abas button[aria-selected="true"] {
+      color: var(--ink);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .painel {
+      display: grid;
+      gap: 16px;
+    }
+
+    .painel[hidden] { display: none; }
+
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+      gap: 16px;
+    }
+
+    /* Comparação: tabela mais larga que o gráfico; empilha em telas menores */
+    .grade-cmp {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .grade-cmp { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* ---------- Blocos ---------- */
+    .bloco {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--raio);
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .bloco-topo {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6px 16px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -.005em;
+    }
+
+    .escopo {
+      font-size: 12.5px;
+      color: var(--muted);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 1px 10px;
+      white-space: nowrap;
+    }
+
+    .nota {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 78ch;
+    }
+
+    .ferramentas {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    /* ---------- Visor (faixa de leitura) ---------- */
+    .visor {
+      background: var(--visor-bg);
+      color: var(--visor-ink);
+      border-radius: var(--raio);
+      padding: 22px 24px 18px;
+    }
+
+    .visor-itens {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 18px 0;
+    }
+
+    .visor-item {
+      padding: 0 20px;
+      border-left: 1px solid var(--visor-linha);
+      min-width: 0;
+    }
+
+    .visor-item:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .visor-valor {
+      display: block;
+      font-size: 30px;
+      line-height: 1.1;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+
+    .visor-rotulo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 5px;
+      color: var(--visor-muted);
+      font-size: 13px;
+    }
+
+    .visor-item[data-tipo] .visor-rotulo::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex: none;
+    }
+
+    .visor-item[data-tipo="teste"] .visor-rotulo::before { background: var(--teste-claro); }
+    .visor-item[data-tipo="manut"] .visor-rotulo::before { background: var(--manut-claro); }
+    .visor-item[data-tipo="suporte"] .visor-rotulo::before { background: var(--suporte-claro); }
+
+    .visor-grupo {
+      margin: 0 0 10px;
+      color: var(--visor-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .visor-grupo-2 {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--visor-linha);
+    }
+
+    .mix {
+      display: flex;
+      height: 8px;
+      margin-top: 22px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--visor-linha);
+    }
+
+    .mix span { display: block; height: 100%; }
+    .mix .teste { background: var(--teste-claro); }
+    .mix .manut { background: var(--manut-claro); }
+    .mix .suporte { background: var(--suporte-claro); }
+
+    .mix-legenda {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 18px;
+      margin-top: 8px;
+      color: var(--visor-muted);
+      font-size: 12.5px;
+    }
+
+    /* ---------- Tabelas ---------- */
+    .rolagem { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 9px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      vertical-align: bottom;
+    }
+
+    th.num, td.num { text-align: right; }
+
+    /* Tabelas com muitas colunas (Detalhe por mês e Ranking): fonte e
+       espaçamento menores para caber na tela */
+    #tMensal, #tRanking { font-size: 13px; }
+    #tMensal th, #tRanking th { font-size: 12px; }
+    #tMensal th, #tMensal td,
+    #tRanking th, #tRanking td { padding-left: 6px; padding-right: 6px; }
+
+    th button {
+      all: unset;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    th button:hover { color: var(--ink); }
+    th[aria-sort="ascending"] button,
+    th[aria-sort="descending"] button { color: var(--ink); }
+
+    .seta { display: inline-block; min-width: .8em; }
+
+    tbody tr:hover td { background: var(--surface-2); }
+    tbody tr.destaque td { background: var(--destaque); }
+
+    tfoot td {
+      font-weight: 600;
+      border-top: 2px solid var(--line);
+      border-bottom: 0;
+    }
+
+    td.vazio {
+      color: var(--muted);
+      white-space: normal;
+      padding: 18px 10px;
+    }
+
+    .up { color: var(--up); font-weight: 600; }
+    .down { color: var(--down); font-weight: 600; }
+    .neutro, .mudo { color: var(--muted); }
+    .meta-ok { color: var(--up); font-weight: 500; }
+
+    /* ---------- Gráficos ---------- */
+    .grafico {
+      position: relative;
+      height: 300px;
+    }
+
+    .grafico.alto { height: 340px; }
+
+    /* ---------- Rodapé ---------- */
+    .rodape {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .rodape p { margin: 0 0 6px; max-width: 90ch; }
+    .rodape b { color: var(--ink); font-weight: 600; }
+    .rodape p:empty { display: none; }
+
+    .erro {
+      max-width: 640px;
+      margin: 64px auto;
+      padding: 0 24px;
+    }
+
+    @media (max-width: 640px) {
+      .pagina { padding: 16px 16px 40px; }
+      h1 { font-size: 23px; }
+      .bloco { padding: 16px; }
+      .visor { padding: 18px 16px 14px; }
+      .visor-valor { font-size: 24px; }
+      .visor-itens { grid-template-columns: 1fr 1fr; }
+      .visor-item { padding: 0 0 0 14px; }
+      .visor-item:nth-child(odd) { padding-left: 0; border-left: 0; }
+      .ferramentas .campo,
+      .ferramentas select,
+      .ferramentas input[type="search"] { width: 100%; min-width: 0; }
+      .topo .campo, .topo select { width: 100%; }
+      .grafico, .grafico.alto { height: 260px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pagina" id="app">
+    <header class="topo">
+      <div>
+        <h1>Bancada de testes</h1>
+        <p class="sub" id="sub"></p>
+      </div>
+
+      <label class="campo">
+        Ano
+        <select id="filtroAno">
+          <option value="">Todos os anos</option>
+        </select>
+      </label>
+    </header>
+
+    <nav class="abas" role="tablist" aria-label="Seções do painel">
+      <button type="button" role="tab" id="tab-geral" data-aba="geral" aria-controls="aba-geral">Visão geral</button>
+      <button type="button" role="tab" id="tab-mensal" data-aba="mensal" aria-controls="aba-mensal">Mês a mês</button>
+      <button type="button" role="tab" id="tab-comparar" data-aba="comparar" aria-controls="aba-comparar">Comparar</button>
+      <button type="button" role="tab" id="tab-modelos" data-aba="modelos" aria-controls="aba-modelos">Modelos</button>
+      <button type="button" role="tab" id="tab-retorno" data-aba="retorno" aria-controls="aba-retorno">Retorno à bancada</button>
+      <button type="button" role="tab" id="tab-equipe" data-aba="equipe" aria-controls="aba-equipe">Equipe</button>
+    </nav>
+
+    <main>
+      <!-- ================= VISÃO GERAL ================= -->
+      <section class="painel" id="aba-geral" role="tabpanel" aria-labelledby="tab-geral" hidden>
+        <div class="visor" id="visor" aria-live="polite"></div>
+
+        <div class="grade">
+          <section class="bloco">
+            <div class="bloco-topo">
+              <h2 id="tituloVolume">Volume</h2>
+              <span class="escopo" data-escopo="filtro"></span>
+            </div>
+            <div class="grafico"><canvas id="gVolume" aria-label="Gráfico de volume"></canvas></div>
+          </section>
+
+          <section class="bloco">
+            <div class="bloco-topo">
+              <h2 id="tituloReceita">Receita</h2>
+              <span class="escopo" data-escopo="filtro"></span>
+            </div>
+            <div class="grafico"><canvas id="gReceita" aria-label="Gráfico de receita"></canvas></div>
+          </section>
+        </div>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Resumo por ano</h2>
+            <span class="escopo" data-escopo="filtro"></span>
+          </div>
+          <div class="rolagem"><table id="tAnual"></table></div>
+          <p class="nota">Suporte não gera receita. Clique no nome de uma coluna para ordenar.</p>
+        </section>
+      </section>
+
+      <!-- ================= MÊS A MÊS ================= -->
+      <section class="painel" id="aba-mensal" role="tabpanel" aria-labelledby="tab-mensal" hidden>
+        <div class="ferramentas">
+          <label class="campo">
+            Ano
+            <select id="selMensalAno"></select>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="chkMetas" checked>
+            Mostrar metas
+          </label>
+        </div>
+
+        <div class="grade">
+          <section class="bloco">
+            <div class="bloco-topo">
+              <h2 id="tituloMensal">Testes por mês</h2>
+            </div>
+            <div class="grafico alto"><canvas id="gMensal" aria-label="Gráfico de testes por mês"></canvas></div>
+          </section>
+
+          <section class="bloco">
+            <div class="bloco-topo">
+              <h2 id="tituloMensalManut">Manutenções e suportes por mês</h2>
+            </div>
+            <div class="grafico alto"><canvas id="gMensalManut" aria-label="Gráfico de manutenções e suportes por mês"></canvas></div>
+          </section>
+        </div>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Detalhe por mês</h2>
+          </div>
+          <div class="rolagem"><table id="tMensal"></table></div>
+          <p class="nota" id="notaMetas"></p>
+        </section>
+      </section>
+
+      <!-- ================= COMPARAR ================= -->
+      <section class="painel" id="aba-comparar" role="tabpanel" aria-labelledby="tab-comparar" hidden>
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Um ano contra outro</h2>
+          </div>
+
+          <div class="ferramentas">
+            <label class="campo">Ano A <select id="cmpAnoA"></select></label>
+            <label class="campo">Ano B <select id="cmpAnoB"></select></label>
+            <label class="check">
+              <input type="checkbox" id="chkMesmoPeriodo" checked>
+              <span id="rotuloMesmoPeriodo">Comparar o mesmo período</span>
+            </label>
+          </div>
+
+          <div class="grade-cmp">
+            <div class="rolagem"><table id="tCmpAnos"></table></div>
+            <div class="grafico"><canvas id="gCmpAnos" aria-label="Comparação entre anos"></canvas></div>
+          </div>
+          <p class="nota" id="notaCmpAnos"></p>
+        </section>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>O mesmo mês em dois anos</h2>
+          </div>
+
+          <div class="ferramentas">
+            <label class="campo">Mês <select id="cmpMes"></select></label>
+            <label class="campo">Ano A <select id="cmpMesAnoA"></select></label>
+            <label class="campo">Ano B <select id="cmpMesAnoB"></select></label>
+          </div>
+
+          <div class="grade-cmp">
+            <div class="rolagem"><table id="tCmpMes"></table></div>
+            <div class="grafico"><canvas id="gCmpMes" aria-label="Comparação do mesmo mês"></canvas></div>
+          </div>
+          <p class="nota">Diferença e variação mostram o Ano B em relação ao Ano A.</p>
+        </section>
+      </section>
+
+      <!-- ================= MODELOS ================= -->
+      <section class="painel" id="aba-modelos" role="tabpanel" aria-labelledby="tab-modelos" hidden>
+        <div class="ferramentas">
+          <label class="campo">
+            Buscar modelo
+            <input id="buscaModelo" type="search" placeholder="Buscar pelo nome" autocomplete="off">
+          </label>
+        </div>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Modelos com mais movimento</h2>
+            <span class="escopo" data-escopo="filtro"></span>
+          </div>
+          <div class="rolagem"><table id="tMovimento"></table></div>
+          <p class="nota" id="notaMovimento"></p>
+        </section>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Manutenção por modelo</h2>
+            <span class="escopo">Todo o histórico</span>
+          </div>
+          <div class="rolagem"><table id="tManutModelo"></table></div>
+          <p class="nota">
+            Retornou: a manutenção foi seguida de um novo teste do mesmo serial.
+            Tempo de retorno: dias entre a manutenção e esse teste.
+          </p>
+        </section>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Teste por modelo</h2>
+            <span class="escopo">Todo o histórico</span>
+          </div>
+          <div class="rolagem"><table id="tTesteModelo"></table></div>
+          <p class="nota">
+            Novo é o primeiro teste registrado do serial; os testes seguintes do mesmo serial
+            são reuso. Equipamentos com reuso são seriais testados mais de uma vez.
+            Equipamentos "(NOVO)" contam nos totais, mas não aparecem nesta lista.
+          </p>
+        </section>
+      </section>
+
+      <!-- ================= RETORNO ================= -->
+      <section class="painel" id="aba-retorno" role="tabpanel" aria-labelledby="tab-retorno" hidden>
+        <div class="visor" id="visorRetorno"></div>
+
+        <div class="grade">
+          <section class="bloco">
+            <div class="bloco-topo">
+              <h2>Manutenções que voltaram ao teste</h2>
+            </div>
+            <div class="rolagem"><table id="tRetornoAno"></table></div>
+            <p class="nota">
+              Cada manutenção com serial e data é seguida até o próximo teste do mesmo serial.
+            </p>
+          </section>
+
+          <section class="bloco">
+            <div class="bloco-topo">
+              <h2>Testes de reuso</h2>
+            </div>
+            <div class="rolagem"><table id="tReusoAno"></table></div>
+            <p class="nota">
+              Reuso é o teste de um serial que já tinha sido testado antes. O tempo é contado
+              entre o teste anterior e o reuso.
+            </p>
+          </section>
+        </div>
+        <p class="nota" style="margin-top:0">O ano escolhido no topo fica destacado nas duas tabelas.</p>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Retorno por modelo</h2>
+            <span class="escopo" data-escopo="filtro"></span>
+          </div>
+          <div class="rolagem"><table id="tRetornoModelo"></table></div>
+        </section>
+      </section>
+
+      <!-- ================= EQUIPE ================= -->
+      <section class="painel" id="aba-equipe" role="tabpanel" aria-labelledby="tab-equipe" hidden>
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Ranking de assistentes</h2>
+            <span class="escopo" data-escopo="filtro"></span>
+          </div>
+          <div class="rolagem"><table id="tRanking"></table></div>
+          <p class="nota" id="notaRanking"></p>
+        </section>
+
+        <section class="bloco">
+          <div class="bloco-topo">
+            <h2>Retorno por técnico</h2>
+            <span class="escopo">Todo o histórico</span>
+          </div>
+          <div class="rolagem"><table id="tTecnico"></table></div>
+          <p class="nota">Taxa de retorno: manutenções do técnico que voltaram a ser testadas.</p>
+        </section>
+      </section>
+    </main>
+
+    <footer class="rodape">
+      <p>
+        <b>Sobre as datas.</b> Um registro com data digitada errada (ano a mais de 1 ano do ano
+        da planilha, ou data no futuro) continua contando nos totais, nos meses e nas metas,
+        mas fica de fora dos cálculos de tempo: retorno à bancada, tempo até nova manutenção
+        e tempo entre reusos. O painel não corrige a data sozinho, porque não tem como saber
+        qual era a certa. A lista dessas datas sai no log e no e-mail da consolidação; depois
+        de corrigida na planilha de origem, o registro volta aos cálculos na próxima atualização.
+      </p>
+      <p id="rodapeDatas"></p>
+    </footer>
+  </div>
+
+  <script>
+    const dados = <?!= dataJson ?>;
+
+    // Metas, rótulos e exemplos vêm do Config.gs (via doGet). Nada da
+    // operação fica escrito nesta página.
+    const CONFIG = dados.config || {};
+    const METAS_TESTES_MES = (CONFIG.metasTestesMes || []).slice().sort((a, b) => a - b);
+    const METAS_MANUT_MES = (CONFIG.metasManutencaoMes || []).slice().sort((a, b) => a - b);
+    const NOME_UNIDADE = CONFIG.nomeUnidadeExterna || "externa";
+
+    const todosAnos = Array.isArray(dados.anual) ? dados.anual : [];
+    const anosMensal = Object.keys(dados.mensal || {}).sort();
+
+    const NOMES_MESES = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+    const CODIGOS_MESES = [
+      "JAN", "FEV", "MAR", "ABR", "MAI", "JUN",
+      "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"
+    ];
+
+    const $ = id => document.getElementById(id);
+    const graficos = {};
+    const ordemTabelas = {};
+    let abaAtiva = "geral";
+
+    // ------------------------------------------------------------------
+    // Formatação
+    // ------------------------------------------------------------------
+    const numero = v =>
+      Number(v || 0).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+
+    const moeda = v =>
+      "R$ " + Number(v || 0).toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+
+    const moedaCurta = v => {
+      const n = Number(v || 0);
+      if (Math.abs(n) >= 1e6) return "R$ " + numero(n / 1e6) + " mi";
+      if (Math.abs(n) >= 1e3) return "R$ " + numero(n / 1e3) + " mil";
+      return "R$ " + numero(n);
+    };
+
+    // Valor compacto para o visor (o valor exato fica nas tabelas).
+    const moedaVisor = v => {
+      const n = Number(v || 0);
+      const opcoes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+      if (Math.abs(n) >= 1e6) return "R$ " + (n / 1e6).toLocaleString("pt-BR", opcoes) + " mi";
+      if (Math.abs(n) >= 1e5) return "R$ " + (n / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 0 }) + " mil";
+      return moeda(n);
+    };
+
+    const pct = v => numero(Number(v || 0) * 100) + "%";
+
+    const esc = v =>
+      String(v ?? "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+      })[c]);
+
+    const soma = (lista, campo) =>
+      lista.reduce((t, item) => t + Number(item[campo] || 0), 0);
+
+    const fmt = {
+      texto: v => esc(v),
+      num: v => numero(v),
+      moeda: v => moeda(v),
+      pct: v => pct(v),
+      dias: v => (v == null ? '<span class="mudo">—</span>' : numero(v) + " dias")
+    };
+
+    const css = nome =>
+      getComputedStyle(document.documentElement).getPropertyValue(nome).trim();
+
+    // ------------------------------------------------------------------
+    // Estado dos filtros
+    // ------------------------------------------------------------------
+    const anoFiltro = () => $("filtroAno").value;
+
+    const anosVisiveis = () => {
+      const ano = anoFiltro();
+      return ano ? todosAnos.filter(a => String(a.ano) === ano) : todosAnos;
+    };
+
+    const termoBusca = () =>
+      $("buscaModelo").value.trim().toLocaleLowerCase("pt-BR");
+
+    const casaBusca = modelo => {
+      const busca = termoBusca();
+      return !busca || String(modelo).toLocaleLowerCase("pt-BR").includes(busca);
+    };
+
+    function atualizarEscopos() {
+      const ano = anoFiltro();
+      document.querySelectorAll('[data-escopo="filtro"]').forEach(el => {
+        el.textContent = ano ? "Ano " + ano : "Todos os anos";
+      });
+    }
+
+    // Último mês (0 a 11) com algum registro no ano, ou -1 se nenhum.
+    function ultimoMesComDados(ano) {
+      const meses = (dados.mensal && dados.mensal[ano]) || [];
+      let ultimo = -1;
+      meses.forEach(m => { if (m.total > 0) ultimo = m.mesOrdem; });
+      return ultimo;
+    }
+
+    // Série mensal para gráfico: meses depois do último com registro viram
+    // null, para a linha não "despencar" a zero num ano ainda em andamento.
+    function serieMensal(meses, campo, ultimo) {
+      return meses.map(m => (m.mesOrdem > ultimo ? null : m[campo]));
+    }
+
+    // ------------------------------------------------------------------
+    // Tabela genérica com ordenação por coluna
+    // ------------------------------------------------------------------
+    function compararValores(a, b) {
+      const va = a === null || a === undefined || a === "";
+      const vb = b === null || b === undefined || b === "";
+      if (va && vb) return 0;
+      if (va) return -1;
+      if (vb) return 1;
+      if (typeof a === "number" && typeof b === "number") return a - b;
+      return String(a).localeCompare(String(b), "pt-BR", { numeric: true });
+    }
+
+    function tabela(id, colunas, linhas, opcoes = {}) {
+      const el = $(id);
+
+      if (!linhas.length) {
+        el.innerHTML = `
+          <tbody><tr>
+            <td class="vazio" colspan="${colunas.length}">
+              ${esc(opcoes.vazio || "Nenhum registro para este filtro.")}
+            </td>
+          </tr></tbody>`;
+        return;
+      }
+
+      let lista = linhas.slice();
+      const ordem = ordemTabelas[id];
+
+      if (ordem) {
+        const col = colunas.find(c => c.chave === ordem.chave);
+        if (col) {
+          const campo = col.ordenarPor || col.chave;
+          lista.sort((a, b) => compararValores(a[campo], b[campo]) * ordem.dir);
+        }
+      }
+
+      if (opcoes.limite) lista = lista.slice(0, opcoes.limite);
+
+      const cabecalho = colunas.map(col => {
+        const classe = col.texto ? "" : ' class="num"';
+        if (col.ordenavel === false) {
+          return `<th scope="col"${classe}>${esc(col.rotulo)}</th>`;
+        }
+        const ativo = ordem && ordem.chave === col.chave;
+        const sort = ativo ? (ordem.dir === 1 ? "ascending" : "descending") : "none";
+        const seta = ativo ? (ordem.dir === 1 ? "↑" : "↓") : "";
+        return `
+          <th scope="col"${classe} aria-sort="${sort}">
+            <button type="button" data-tabela="${id}" data-chave="${col.chave}" data-texto="${col.texto ? 1 : 0}">
+              ${esc(col.rotulo)}<span class="seta" aria-hidden="true">${seta}</span>
+            </button>
+          </th>`;
+      }).join("");
+
+      const corpo = lista.map((item, i) => {
+        const destaque = opcoes.destaque && opcoes.destaque(item) ? ' class="destaque"' : "";
+        const celulas = colunas.map(col => {
+          const classe = col.texto ? "" : ' class="num"';
+          return `<td${classe}>${(col.fmt || fmt.texto)(item[col.chave], item, i)}</td>`;
+        }).join("");
+        return `<tr${destaque}>${celulas}</tr>`;
+      }).join("");
+
+      let rodape = "";
+      if (opcoes.rodape) {
+        rodape = `<tfoot><tr>${colunas.map((col, i) => {
+          const classe = col.texto ? "" : ' class="num"';
+          const valor = i === 0 ? "Total" : (opcoes.rodape[col.chave] ?? "");
+          return `<td${classe}>${valor}</td>`;
+        }).join("")}</tr></tfoot>`;
+      }
+
+      el.innerHTML = `<thead><tr>${cabecalho}</tr></thead><tbody>${corpo}</tbody>${rodape}`;
+    }
+
+    document.addEventListener("click", evento => {
+      const botao = evento.target.closest("th button[data-tabela]");
+      if (!botao) return;
+
+      const { tabela: id, chave, texto } = botao.dataset;
+      const atual = ordemTabelas[id];
+
+      ordemTabelas[id] = atual && atual.chave === chave
+        ? { chave, dir: -atual.dir }
+        : { chave, dir: texto === "1" ? 1 : -1 };
+
+      renderAba[abaAtiva]();
+
+      const novo = document.querySelector(
+        `th button[data-tabela="${id}"][data-chave="${chave}"]`
+      );
+      if (novo) novo.focus();
+    });
+
+    // ------------------------------------------------------------------
+    // Gráficos
+    // ------------------------------------------------------------------
+    const reduzirMovimento =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    Chart.defaults.font.family = '"IBM Plex Sans", system-ui, sans-serif';
+    Chart.defaults.font.size = 12.5;
+    if (reduzirMovimento) Chart.defaults.animation = false;
+
+    // Desenha linhas tracejadas horizontais nas metas.
+    const pluginMetas = {
+      id: "metas",
+      afterDatasetsDraw(chart, _args, opcoes) {
+        const valores = (opcoes && opcoes.valores) || [];
+        if (!valores.length) return;
+
+        const { ctx, chartArea, scales } = chart;
+        const y = scales.y;
+
+        ctx.save();
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = opcoes.cor;
+        ctx.fillStyle = opcoes.cor;
+        ctx.font = '12px "IBM Plex Sans", system-ui, sans-serif';
+        ctx.textAlign = "right";
+        ctx.textBaseline = "bottom";
+
+        valores.forEach(valor => {
+          const pos = y.getPixelForValue(valor);
+          if (pos < chartArea.top || pos > chartArea.bottom) return;
+          ctx.beginPath();
+          ctx.moveTo(chartArea.left, pos);
+          ctx.lineTo(chartArea.right, pos);
+          ctx.stroke();
+          ctx.fillText("Meta " + numero(valor), chartArea.right - 4, pos - 3);
+        });
+
+        ctx.restore();
+      }
+    };
+
+    function desenhar(id, config) {
+      if (graficos[id]) graficos[id].destroy();
+      graficos[id] = new Chart($(id), config);
+    }
+
+    function limparGrafico(id) {
+      if (graficos[id]) {
+        graficos[id].destroy();
+        delete graficos[id];
+      }
+    }
+
+    function opcoesGrafico({ tooltip = numero, eixo = numero, empilhado = false, maximo } = {}) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: css("--muted"),
+              usePointStyle: true,
+              pointStyle: "rectRounded",
+              boxWidth: 8,
+              boxHeight: 8,
+              padding: 16
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: c => `${c.dataset.label}: ${tooltip(c.raw)}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: empilhado,
+            ticks: { color: css("--muted") },
+            grid: { display: false },
+            border: { color: css("--line") }
+          },
+          y: {
+            stacked: empilhado,
+            beginAtZero: true,
+            suggestedMax: maximo,
+            ticks: { color: css("--muted"), callback: v => eixo(v) },
+            grid: { color: css("--line") },
+            border: { display: false }
+          }
+        }
+      };
+    }
+
+    const serieBarra = (rotulo, valores, cor) => ({
+      label: rotulo,
+      data: valores,
+      backgroundColor: css(cor),
+      borderRadius: 4,
+      maxBarThickness: 44
+    });
+
+    const serieLinha = (rotulo, valores, cor) => ({
+      type: "line",
+      label: rotulo,
+      data: valores,
+      borderColor: css(cor),
+      backgroundColor: css(cor),
+      borderWidth: 2,
+      pointRadius: 3,
+      tension: 0.3
+    });
+
+    // ------------------------------------------------------------------
+    // Aba: Visão geral
+    // ------------------------------------------------------------------
+    function itemVisor(rotulo, valor, tipo, exato) {
+      const atributo = tipo ? ` data-tipo="${tipo}"` : "";
+      const titulo = exato ? ` title="${esc(exato)}"` : "";
+      return `
+        <div class="visor-item"${atributo}>
+          <span class="visor-valor"${titulo}>${esc(valor)}</span>
+          <span class="visor-rotulo">${esc(rotulo)}</span>
+        </div>`;
+    }
+
+    function renderVisor(anos) {
+      const ano = anoFiltro();
+      const testes = soma(anos, "testeQtd");
+      const manut = soma(anos, "manutencaoQtd");
+      const suporte = soma(anos, "suporteQtd");
+      const total = testes + manut + suporte;
+
+      let taxa;
+      let media;
+
+      if (ano) {
+        const item = anos[0] || {};
+        taxa = item.taxaRetorno;
+        media = item.mediaDiasRetorno;
+      } else {
+        const r = dados.retornoResumo || {};
+        taxa = r.taxaRetorno;
+        media = r.mediaDias;
+      }
+
+      const parte = v => (total ? (v / total) * 100 : 0);
+
+      $("visor").innerHTML = `
+        <div class="visor-itens">
+          ${itemVisor(`Testes (${numero(soma(anos, "testeReusoQtd"))} reusos)`, numero(testes), "teste")}
+          ${itemVisor("Manutenções", numero(manut), "manut")}
+          ${itemVisor("Suportes", numero(suporte), "suporte")}
+          ${itemVisor("Receita total", moedaVisor(soma(anos, "receitaTotal")), null, moeda(soma(anos, "receitaTotal")))}
+          ${itemVisor("Manutenções que voltaram ao teste", pct(taxa))}
+          ${itemVisor("Tempo médio até voltar", media == null ? "—" : numero(media) + " dias")}
+        </div>
+        <div class="mix" role="img" aria-label="Divisão da demanda: testes ${numero(parte(testes))}%, manutenções ${numero(parte(manut))}%, suportes ${numero(parte(suporte))}%">
+          <span class="teste" style="width:${parte(testes)}%"></span>
+          <span class="manut" style="width:${parte(manut)}%"></span>
+          <span class="suporte" style="width:${parte(suporte)}%"></span>
+        </div>
+        <div class="mix-legenda">
+          <span>${numero(total)} atendimentos no total</span>
+          <span>Testes ${numero(parte(testes))}%</span>
+          <span>Manutenções ${numero(parte(manut))}%</span>
+          <span>Suportes ${numero(parte(suporte))}%</span>
+        </div>`;
+    }
+
+    const colunasAnual = [
+      { chave: "ano", rotulo: "Ano", texto: true },
+      { chave: "testeQtd", rotulo: "Testes", fmt: fmt.num },
+      { chave: "testeReusoQtd", rotulo: "Reusos", fmt: fmt.num },
+      { chave: "testeReceita", rotulo: "Receita testes", fmt: fmt.moeda },
+      { chave: "mediaTeste", rotulo: "Média por teste", fmt: fmt.moeda },
+      { chave: "manutencaoQtd", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "manutencaoReceita", rotulo: "Receita manutenções", fmt: fmt.moeda },
+      { chave: "mediaManutencao", rotulo: "Média por manutenção", fmt: fmt.moeda },
+      { chave: "suporteQtd", rotulo: "Suportes", fmt: fmt.num },
+      { chave: "total", rotulo: "Total", fmt: fmt.num },
+      { chave: "receitaTotal", rotulo: "Receita total", fmt: fmt.moeda }
+    ];
+
+    function renderGeral() {
+      const ano = anoFiltro();
+      const anos = anosVisiveis();
+
+      renderVisor(anos);
+
+      // Com um ano escolhido, os gráficos mostram os meses daquele ano.
+      // Sem filtro, mostram um grupo de barras por ano.
+      let rotulos;
+      let valores;
+
+      if (ano && dados.mensal && dados.mensal[ano]) {
+        const meses = dados.mensal[ano];
+        const ultimo = ultimoMesComDados(ano);
+        rotulos = meses.map(m => m.mesLabel.slice(0, 3));
+        valores = campo => serieMensal(meses, campo, ultimo);
+        $("tituloVolume").textContent = "Volume por mês";
+        $("tituloReceita").textContent = "Receita por mês";
+      } else {
+        rotulos = anos.map(a => a.ano);
+        valores = campo => anos.map(a => a[campo]);
+        $("tituloVolume").textContent = "Volume por ano";
+        $("tituloReceita").textContent = "Receita por ano";
+      }
+
+      desenhar("gVolume", {
+        type: "bar",
+        data: {
+          labels: rotulos,
+          datasets: [
+            serieBarra("Testes", valores("testeQtd"), "--teste"),
+            serieBarra("Manutenções", valores("manutencaoQtd"), "--manut"),
+            serieBarra("Suportes", valores("suporteQtd"), "--suporte")
+          ]
+        },
+        options: opcoesGrafico()
+      });
+
+      desenhar("gReceita", {
+        type: "bar",
+        data: {
+          labels: rotulos,
+          datasets: [
+            serieBarra("Testes", valores("testeReceita"), "--teste"),
+            serieBarra("Manutenções", valores("manutencaoReceita"), "--manut")
+          ]
+        },
+        options: opcoesGrafico({ tooltip: moeda, eixo: moedaCurta, empilhado: true })
+      });
+
+      const rodape = anos.length > 1
+        ? {
+            testeQtd: numero(soma(anos, "testeQtd")),
+            testeReusoQtd: numero(soma(anos, "testeReusoQtd")),
+            testeReceita: moeda(soma(anos, "testeReceita")),
+            manutencaoQtd: numero(soma(anos, "manutencaoQtd")),
+            manutencaoReceita: moeda(soma(anos, "manutencaoReceita")),
+            suporteQtd: numero(soma(anos, "suporteQtd")),
+            total: numero(soma(anos, "total")),
+            receitaTotal: moeda(soma(anos, "receitaTotal"))
+          }
+        : null;
+
+      tabela("tAnual", colunasAnual, anos, { rodape });
+    }
+
+    // ------------------------------------------------------------------
+    // Aba: Mês a mês
+    // ------------------------------------------------------------------
+    function textoMeta(qtd, item, metas) {
+      if (!item.total || !metas.length) return '<span class="mudo">—</span>';
+
+      const atingidas = metas.filter(m => qtd >= m);
+      const proxima = metas.find(m => qtd < m);
+
+      if (!proxima) {
+        return `<span class="meta-ok">✓ todas</span>`;
+      }
+
+      const falta = `faltam ${numero(proxima - qtd)} p/ ${numero(proxima)}`;
+
+      return atingidas.length
+        ? `<span class="meta-ok">✓ ${numero(atingidas[atingidas.length - 1])}</span>, <span class="mudo">${falta}</span>`
+        : `<span class="mudo">${falta.charAt(0).toUpperCase() + falta.slice(1)}</span>`;
+    }
+
+    const colunasMensal = [
+      { chave: "mesOrdem", rotulo: "Mês", texto: true, fmt: (_v, item) => esc(item.mesLabel) },
+      { chave: "testeQtd", rotulo: "Testes", fmt: fmt.num },
+      { chave: "testeReusoQtd", rotulo: "Reusos", fmt: fmt.num },
+      { chave: "meta", rotulo: "Meta de testes", texto: true, ordenavel: false, fmt: (_v, item) => textoMeta(item.testeQtd, item, METAS_TESTES_MES) },
+      { chave: "testeReceita", rotulo: "Receita testes", fmt: fmt.moeda },
+      { chave: "manutencaoQtd", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "metaManut", rotulo: "Meta de manutenções", texto: true, ordenavel: false, fmt: (_v, item) => textoMeta(item.manutencaoQtd, item, METAS_MANUT_MES) },
+      { chave: "manutencaoReceita", rotulo: "Receita manutenções", fmt: fmt.moeda },
+      { chave: "suporteQtd", rotulo: "Suportes", fmt: fmt.num },
+      { chave: "total", rotulo: "Total", fmt: fmt.num },
+      { chave: "receitaTotal", rotulo: "Receita total", fmt: fmt.moeda }
+    ];
+
+    function renderMensal() {
+      const ano = $("selMensalAno").value;
+      const meses = (dados.mensal && dados.mensal[ano]) || [];
+      const comMetas = $("chkMetas").checked;
+
+      $("tituloMensal").textContent = ano ? "Testes por mês em " + ano : "Testes por mês";
+      $("tituloMensalManut").textContent = ano
+        ? "Manutenções e suportes em " + ano
+        : "Manutenções e suportes por mês";
+
+      if (!meses.length) {
+        limparGrafico("gMensal");
+        limparGrafico("gMensalManut");
+        tabela("tMensal", colunasMensal, [], { vazio: "Não há registros mensais para este ano." });
+        return;
+      }
+
+      const ultimo = ultimoMesComDados(ano);
+      const rotulosMeses = meses.map(m => m.mesLabel.slice(0, 3));
+
+      // Gráfico com linhas de meta. A escala sobe até a maior meta para as
+      // linhas sempre aparecerem, mesmo num mês fraco.
+      const graficoComMetas = (id, datasets, metas, empilhado = false) => {
+        desenhar(id, {
+          type: "bar",
+          data: { labels: rotulosMeses, datasets },
+          options: {
+            ...opcoesGrafico({
+              maximo: comMetas && metas.length ? Math.max(...metas) * 1.08 : undefined,
+              empilhado
+            }),
+            plugins: {
+              ...opcoesGrafico().plugins,
+              metas: { valores: comMetas ? metas : [], cor: css("--meta") }
+            }
+          },
+          plugins: [pluginMetas]
+        });
+      };
+
+      // Barras empilhadas: novos + reusos = total de testes do mês, que é o
+      // número comparado com a meta.
+      graficoComMetas("gMensal", [
+        serieBarra("Testes novos", serieMensal(meses, "testeNovoQtd", ultimo), "--teste"),
+        serieBarra("Reusos", serieMensal(meses, "testeReusoQtd", ultimo), "--reuso")
+      ], METAS_TESTES_MES, true);
+
+      graficoComMetas("gMensalManut", [
+        serieBarra("Manutenções", serieMensal(meses, "manutencaoQtd", ultimo), "--manut"),
+        serieLinha("Suportes", serieMensal(meses, "suporteQtd", ultimo), "--suporte")
+      ], METAS_MANUT_MES);
+
+      // Na tabela, esconde só os meses vazios do fim do ano (ainda não chegaram).
+      tabela("tMensal", colunasMensal, meses.filter(m => m.mesOrdem <= ultimo), {
+        rodape: {
+          testeQtd: numero(soma(meses, "testeQtd")),
+          testeReusoQtd: numero(soma(meses, "testeReusoQtd")),
+          testeReceita: moeda(soma(meses, "testeReceita")),
+          manutencaoQtd: numero(soma(meses, "manutencaoQtd")),
+          manutencaoReceita: moeda(soma(meses, "manutencaoReceita")),
+          suporteQtd: numero(soma(meses, "suporteQtd")),
+          total: numero(soma(meses, "total")),
+          receitaTotal: moeda(soma(meses, "receitaTotal"))
+        }
+      });
+
+      const mesesComDados = meses.filter(m => m.total > 0).length;
+
+      if (!METAS_TESTES_MES.length || !METAS_MANUT_MES.length) {
+        $("notaMetas").textContent = "Nenhuma meta cadastrada no Config.gs.";
+        return;
+      }
+
+      const naMetaTestes = meses.filter(m => m.testeQtd >= METAS_TESTES_MES[0]).length;
+      const naMetaManut = meses.filter(m => m.manutencaoQtd >= METAS_MANUT_MES[0]).length;
+
+      $("notaMetas").textContent =
+        `Metas mensais da equipe: testes ${METAS_TESTES_MES.map(numero).join(", ")}; ` +
+        `manutenções ${METAS_MANUT_MES.map(numero).join(", ")}. ` +
+        `Em ${ano}, dos ${mesesComDados} meses com registro, ${naMetaTestes} bateram a primeira meta de testes ` +
+        `e ${naMetaManut} bateram a primeira meta de manutenções.`;
+    }
+
+    // ------------------------------------------------------------------
+    // Aba: Comparar
+    // ------------------------------------------------------------------
+    function dadosDoPeriodo(ano, ateMes) {
+      if (ateMes == null) {
+        return todosAnos.find(a => String(a.ano) === ano) || null;
+      }
+
+      const meses = ((dados.mensal && dados.mensal[ano]) || [])
+        .filter(m => m.mesOrdem <= ateMes);
+
+      if (!meses.length) return null;
+
+      const r = {
+        ano,
+        testeQtd: soma(meses, "testeQtd"),
+        testeReusoQtd: soma(meses, "testeReusoQtd"),
+        testeReceita: soma(meses, "testeReceita"),
+        manutencaoQtd: soma(meses, "manutencaoQtd"),
+        manutencaoReceita: soma(meses, "manutencaoReceita"),
+        suporteQtd: soma(meses, "suporteQtd")
+      };
+
+      r.total = r.testeQtd + r.manutencaoQtd + r.suporteQtd;
+      r.receitaTotal = r.testeReceita + r.manutencaoReceita;
+      r.mediaTeste = r.testeQtd ? r.testeReceita / r.testeQtd : 0;
+      r.mediaManutencao = r.manutencaoQtd ? r.manutencaoReceita / r.manutencaoQtd : 0;
+      return r;
+    }
+
+    function variacao(base, atual) {
+      const b = Number(base || 0);
+      const a = Number(atual || 0);
+      if (!b) return a ? "Novo" : "0%";
+      const p = ((a - b) / b) * 100;
+      return (p > 0 ? "+" : "") + numero(p) + "%";
+    }
+
+    function linhasComparacao(metricas, dadosA, dadosB) {
+      return metricas.map(m => {
+        const a = dadosA[m.chave];
+        const b = dadosB[m.chave];
+        const semDados = a == null || b == null;
+        const delta = semDados ? null : Number(b) - Number(a);
+
+        let classe = "neutro";
+        if (!semDados && !m.neutro) {
+          classe = delta > 0 ? "up" : delta < 0 ? "down" : "neutro";
+        }
+
+        const seta = semDados ? "" : delta > 0 ? "▲ " : delta < 0 ? "▼ " : "";
+
+        return {
+          metrica: m.rotulo,
+          a: m.fmt(a),
+          b: m.fmt(b),
+          diferenca: semDados ? "—" : `<span class="${classe}">${seta}${m.fmt(Math.abs(delta))}</span>`,
+          variacao: semDados ? "—" : `<span class="${classe}">${variacao(a, b)}</span>`
+        };
+      });
+    }
+
+    function colunasComparacao(rotuloA, rotuloB) {
+      const html = v => v;
+      return [
+        { chave: "metrica", rotulo: "Métrica", texto: true, ordenavel: false },
+        { chave: "a", rotulo: rotuloA, ordenavel: false, fmt: html },
+        { chave: "b", rotulo: rotuloB, ordenavel: false, fmt: html },
+        { chave: "diferenca", rotulo: "Diferença", ordenavel: false, fmt: html },
+        { chave: "variacao", rotulo: "Variação", ordenavel: false, fmt: html }
+      ];
+    }
+
+    const diasFmt = v => (v == null ? "—" : numero(v) + " dias");
+
+    const METRICAS_BASE = [
+      { chave: "testeQtd", rotulo: "Testes", fmt: numero },
+      { chave: "testeReusoQtd", rotulo: "Reusos (dentro dos testes)", fmt: numero, neutro: true },
+      { chave: "testeReceita", rotulo: "Receita de testes", fmt: moeda },
+      { chave: "mediaTeste", rotulo: "Média por teste", fmt: moeda },
+      { chave: "manutencaoQtd", rotulo: "Manutenções", fmt: numero },
+      { chave: "manutencaoReceita", rotulo: "Receita de manutenções", fmt: moeda },
+      { chave: "mediaManutencao", rotulo: "Média por manutenção", fmt: moeda },
+      { chave: "suporteQtd", rotulo: "Suportes", fmt: numero },
+      { chave: "total", rotulo: "Demanda total", fmt: numero },
+      { chave: "receitaTotal", rotulo: "Receita total", fmt: moeda }
+    ];
+
+    const METRICAS_RETORNO = [
+      { chave: "taxaRetorno", rotulo: "Manutenções que voltaram ao teste", fmt: pct, neutro: true },
+      { chave: "mediaDiasRetorno", rotulo: "Tempo médio até voltar", fmt: diasFmt, neutro: true }
+    ];
+
+    function graficoComparacao(id, dadosA, dadosB, rotuloA, rotuloB) {
+      desenhar(id, {
+        type: "bar",
+        data: {
+          labels: ["Testes", "Manutenções", "Suportes"],
+          datasets: [
+            serieBarra(rotuloA, [dadosA.testeQtd, dadosA.manutencaoQtd, dadosA.suporteQtd], "--meta"),
+            serieBarra(rotuloB, [dadosB.testeQtd, dadosB.manutencaoQtd, dadosB.suporteQtd], "--teste")
+          ]
+        },
+        options: opcoesGrafico()
+      });
+    }
+
+    function renderComparacaoAnos() {
+      const anoA = $("cmpAnoA").value;
+      const anoB = $("cmpAnoB").value;
+
+      const ultimoA = ultimoMesComDados(anoA);
+      const ultimoB = ultimoMesComDados(anoB);
+      const limite = Math.min(ultimoA, ultimoB);
+      const periodoParcial = limite >= 0 && limite < 11;
+
+      // O checkbox só faz sentido quando algum dos dois anos está incompleto.
+      $("chkMesmoPeriodo").disabled = !periodoParcial;
+      $("rotuloMesmoPeriodo").textContent = periodoParcial
+        ? `Comparar só de janeiro a ${NOMES_MESES[limite].toLowerCase()}`
+        : "Comparar o mesmo período";
+
+      const usarPeriodo = periodoParcial && $("chkMesmoPeriodo").checked;
+      const ateMes = usarPeriodo ? limite : null;
+
+      const dadosA = dadosDoPeriodo(anoA, ateMes);
+      const dadosB = dadosDoPeriodo(anoB, ateMes);
+
+      if (!dadosA || !dadosB) {
+        tabela("tCmpAnos", colunasComparacao(anoA, anoB), []);
+        limparGrafico("gCmpAnos");
+        $("notaCmpAnos").textContent = "";
+        return;
+      }
+
+      const metricas = usarPeriodo ? METRICAS_BASE : METRICAS_BASE.concat(METRICAS_RETORNO);
+      const rotuloA = usarPeriodo ? `${anoA} (jan–${CODIGOS_MESES[limite].toLowerCase()})` : anoA;
+      const rotuloB = usarPeriodo ? `${anoB} (jan–${CODIGOS_MESES[limite].toLowerCase()})` : anoB;
+
+      tabela("tCmpAnos", colunasComparacao(rotuloA, rotuloB), linhasComparacao(metricas, dadosA, dadosB));
+      graficoComparacao("gCmpAnos", dadosA, dadosB, rotuloA, rotuloB);
+
+      let nota = "Diferença e variação mostram o Ano B em relação ao Ano A.";
+      if (periodoParcial && !usarPeriodo) {
+        nota += ` Atenção: um dos anos só tem registros até ${NOMES_MESES[limite].toLowerCase()}, então o ano inteiro contra um ano parcial distorce a comparação.`;
+      } else if (usarPeriodo) {
+        nota += " Os indicadores de retorno ficam de fora porque só existem para o ano inteiro.";
+      }
+      $("notaCmpAnos").textContent = nota;
+    }
+
+    function renderComparacaoMes() {
+      const codigo = $("cmpMes").value;
+      const anoA = $("cmpMesAnoA").value;
+      const anoB = $("cmpMesAnoB").value;
+
+      const achar = ano =>
+        ((dados.mensal && dados.mensal[ano]) || []).find(m => m.mes === codigo);
+
+      const dadosA = achar(anoA);
+      const dadosB = achar(anoB);
+
+      if (!dadosA || !dadosB) {
+        tabela("tCmpMes", colunasComparacao(anoA, anoB), []);
+        limparGrafico("gCmpMes");
+        return;
+      }
+
+      const rotuloA = `${dadosA.mesLabel.slice(0, 3)}/${anoA}`;
+      const rotuloB = `${dadosB.mesLabel.slice(0, 3)}/${anoB}`;
+
+      tabela("tCmpMes", colunasComparacao(rotuloA, rotuloB), linhasComparacao(METRICAS_BASE, dadosA, dadosB));
+      graficoComparacao("gCmpMes", dadosA, dadosB, rotuloA, rotuloB);
+    }
+
+    function renderComparar() {
+      renderComparacaoAnos();
+      renderComparacaoMes();
+    }
+
+    // ------------------------------------------------------------------
+    // Aba: Modelos
+    // ------------------------------------------------------------------
+    const colunasMovimento = [
+      { chave: "modelo", rotulo: "Modelo", texto: true },
+      { chave: "testes", rotulo: "Testes", fmt: fmt.num },
+      { chave: "manutencoes", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "total", rotulo: "Total", fmt: fmt.num },
+      { chave: "receita", rotulo: "Receita", fmt: fmt.moeda }
+    ];
+
+    const colunasManutModelo = [
+      { chave: "modelo", rotulo: "Modelo", texto: true },
+      { chave: "equipamentos", rotulo: "Equipamentos", fmt: fmt.num },
+      { chave: "manutencoes", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "retornaram", rotulo: "Retornaram", fmt: fmt.num },
+      { chave: "naoRetornaram", rotulo: "Não retornaram", fmt: fmt.num },
+      { chave: "mediaDiasRetorno", rotulo: "Tempo de retorno", fmt: fmt.dias }
+    ];
+
+    const colunasTesteModelo = [
+      { chave: "modelo", rotulo: "Modelo", texto: true },
+      { chave: "equipamentos", rotulo: "Equipamentos", fmt: fmt.num },
+      { chave: "testes", rotulo: "Testes", fmt: fmt.num },
+      { chave: "testesIniciais", rotulo: "Novos", fmt: fmt.num },
+      { chave: "testesRetorno", rotulo: "Reusos", fmt: fmt.num },
+      { chave: "equipamentosComRetorno", rotulo: "Equip. com reuso", fmt: fmt.num },
+      { chave: "mediaDiasEntreRetornos", rotulo: "Tempo entre reusos", fmt: fmt.dias },
+      { chave: "mediaDiasAteManutencao", rotulo: "Tempo até nova manutenção", fmt: fmt.dias }
+    ];
+
+    function renderModelos() {
+      const mapa = {};
+
+      anosVisiveis().forEach(ano => {
+        (ano.modelos || []).forEach(m => {
+          const chave = String(m.modelo);
+          if (!mapa[chave]) {
+            mapa[chave] = { modelo: chave, testes: 0, manutencoes: 0, total: 0, receita: 0 };
+          }
+          const item = mapa[chave];
+          item.testes += Number(m.testes || 0);
+          item.manutencoes += Number(m.manutencoes || 0);
+          item.total = item.testes + item.manutencoes;
+          item.receita += Number(m.receitaTestes || 0) + Number(m.receitaManutencoes || 0);
+        });
+      });
+
+      const movimento = Object.values(mapa)
+        .filter(item => casaBusca(item.modelo))
+        .sort((a, b) => b.total - a.total);
+
+      const limite = termoBusca() ? null : 15;
+      tabela("tMovimento", colunasMovimento, movimento, {
+        limite,
+        vazio: "Nenhum modelo encontrado com esse nome."
+      });
+
+      $("notaMovimento").textContent = limite && movimento.length > limite
+        ? `Mostrando os ${limite} modelos com mais movimento de ${movimento.length}. Use a busca para encontrar os demais.`
+        : `${movimento.length} modelo(s) listado(s).`;
+
+      tabela(
+        "tManutModelo",
+        colunasManutModelo,
+        (dados.porModeloManutencao || []).filter(i => casaBusca(i.modelo)),
+        { vazio: "Nenhum modelo encontrado com esse nome." }
+      );
+
+      tabela(
+        "tTesteModelo",
+        colunasTesteModelo,
+        (dados.porModeloTeste || []).filter(i => casaBusca(i.modelo)),
+        { vazio: "Nenhum modelo encontrado com esse nome." }
+      );
+    }
+
+    // ------------------------------------------------------------------
+    // Aba: Retorno à bancada
+    // ------------------------------------------------------------------
+    const colunasRetornoAno = [
+      { chave: "ano", rotulo: "Ano", texto: true },
+      { chave: "manutencaoQtd", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "retornos", rotulo: "Voltaram", fmt: fmt.num },
+      { chave: "taxaRetorno", rotulo: "Taxa", fmt: fmt.pct },
+      { chave: "mediaDiasRetorno", rotulo: "Tempo médio", fmt: fmt.dias },
+      { chave: "medianaDiasRetorno", rotulo: "Mediano", fmt: fmt.dias }
+    ];
+
+    const colunasReusoAno = [
+      { chave: "ano", rotulo: "Ano", texto: true },
+      { chave: "testeQtd", rotulo: "Testes", fmt: fmt.num },
+      { chave: "testeReusoQtd", rotulo: "Reusos", fmt: fmt.num },
+      { chave: "taxaReuso", rotulo: "Taxa", fmt: fmt.pct },
+      { chave: "mediaDiasReuso", rotulo: "Tempo médio", fmt: fmt.dias },
+      { chave: "medianaDiasReuso", rotulo: "Mediano", fmt: fmt.dias }
+    ];
+
+    const colunasRetornoModelo = [
+      { chave: "modelo", rotulo: "Modelo", texto: true },
+      { chave: "equipamentos", rotulo: "Equipamentos", fmt: fmt.num },
+      { chave: "testes", rotulo: "Testes", fmt: fmt.num },
+      { chave: "manutencoes", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "retornaram", rotulo: "Voltaram", fmt: fmt.num },
+      { chave: "naoRetornaram", rotulo: "Não voltaram", fmt: fmt.num },
+      { chave: "mediaDiasRetorno", rotulo: "Tempo de retorno", fmt: fmt.dias },
+      { chave: "mediaDiasAteManutencao", rotulo: "Teste até manutenção", fmt: fmt.dias }
+    ];
+
+    function renderRetorno() {
+      const r = dados.retornoResumo || {};
+      const t = dados.reusoResumo || {};
+      const dias = v => (v == null ? "—" : numero(v) + " dias");
+
+      $("visorRetorno").innerHTML = `
+        <div class="visor-grupo">Manutenções</div>
+        <div class="visor-itens">
+          ${itemVisor("Manutenções analisadas", numero(r.manutencoesAnalisadas), "manut")}
+          ${itemVisor("Voltaram ao teste", numero(r.retornaram))}
+          ${itemVisor("Ainda não voltaram", numero(r.naoRetornaram))}
+          ${itemVisor("Taxa de retorno", pct(r.taxaRetorno))}
+          ${itemVisor("Tempo médio até voltar", dias(r.mediaDias))}
+        </div>
+        <div class="visor-grupo visor-grupo-2">Testes</div>
+        <div class="visor-itens">
+          ${itemVisor("Testes analisados", numero(t.testes), "teste")}
+          ${itemVisor("Reusos", numero(t.reusos))}
+          ${itemVisor("Testes novos", numero((t.testes || 0) - (t.reusos || 0)))}
+          ${itemVisor("Taxa de reuso", pct(t.taxaReuso))}
+          ${itemVisor("Tempo médio até o reuso", dias(t.mediaDias))}
+        </div>
+        <div class="mix-legenda"><span>Todo o histórico, independente do ano escolhido.</span></div>`;
+
+      const ano = anoFiltro();
+      const destaque = item => ano && String(item.ano) === ano;
+
+      tabela("tRetornoAno", colunasRetornoAno, todosAnos, { destaque });
+      tabela("tReusoAno", colunasReusoAno, todosAnos, { destaque });
+
+      tabela(
+        "tRetornoModelo",
+        colunasRetornoModelo,
+        ano ? (dados.porModeloPorAno && dados.porModeloPorAno[ano]) || [] : [],
+        {
+          vazio: ano
+            ? "Nenhuma manutenção ou teste com serial e data neste ano."
+            : "Escolha um ano no filtro do topo para ver o retorno por modelo daquele ano."
+        }
+      );
+    }
+
+    // ------------------------------------------------------------------
+    // Aba: Equipe
+    // ------------------------------------------------------------------
+    const colunasTecnico = [
+      { chave: "responsavel", rotulo: "Técnico", texto: true },
+      { chave: "testes", rotulo: "Testes", fmt: fmt.num },
+      { chave: "manutencoes", rotulo: "Manutenções", fmt: fmt.num },
+      { chave: "retornaram", rotulo: "Voltaram", fmt: fmt.num },
+      { chave: "naoRetornaram", rotulo: "Não voltaram", fmt: fmt.num },
+      { chave: "taxaRetorno", rotulo: "Taxa de retorno", fmt: fmt.pct }
+    ];
+
+    function renderEquipe() {
+      const ano = anoFiltro();
+
+      const base = ano
+        ? (dados.rankingResponsaveisPorAno && dados.rankingResponsaveisPorAno[ano]) || []
+        : dados.rankingResponsaveis || [];
+
+      const lista = base.map((item, i) => ({ ...item, posicao: i + 1 }));
+      const temUnidade = lista.some(item => item.testesUnidade > 0);
+
+      const colunas = [
+        { chave: "posicao", rotulo: "#", texto: true },
+        { chave: "responsavel", rotulo: "Responsável", texto: true },
+        { chave: "testes", rotulo: "Testes", fmt: fmt.num },
+        { chave: "testesReuso", rotulo: "Reusos", fmt: fmt.num },
+        { chave: "receitaTestes", rotulo: "Receita testes", fmt: fmt.moeda }
+      ];
+
+      if (temUnidade) {
+        colunas.push(
+          { chave: "testesUnidade", rotulo: `Testes ${NOME_UNIDADE}`, fmt: fmt.num },
+          { chave: "receitaTestesUnidade", rotulo: `Receita ${NOME_UNIDADE}`, fmt: fmt.moeda }
+        );
+      }
+
+      colunas.push(
+        { chave: "manutencoes", rotulo: "Manutenções", fmt: fmt.num },
+        { chave: "receitaManutencoes", rotulo: "Receita manutenções", fmt: fmt.moeda },
+        { chave: "suportes", rotulo: "Suportes", fmt: fmt.num },
+        { chave: "receitaTotal", rotulo: "Receita total", fmt: fmt.moeda }
+      );
+
+      tabela("tRanking", colunas, lista);
+
+      $("notaRanking").textContent =
+        "A posição segue a quantidade de testes (desempate pela receita de testes)." +
+        (temUnidade ? ` Testes feitos pela unidade ${NOME_UNIDADE} aparecem em colunas próprias e não entram nos totais.` : "");
+
+      tabela("tTecnico", colunasTecnico, dados.porTecnico || []);
+    }
+
+    // ------------------------------------------------------------------
+    // Abas e inicialização
+    // ------------------------------------------------------------------
+    const renderAba = {
+      geral: renderGeral,
+      mensal: renderMensal,
+      comparar: renderComparar,
+      modelos: renderModelos,
+      retorno: renderRetorno,
+      equipe: renderEquipe
+    };
+
+    const botoesAba = Array.from(document.querySelectorAll('[role="tab"]'));
+
+    function mostrarAba(nome) {
+      if (!renderAba[nome]) nome = "geral";
+      abaAtiva = nome;
+
+      botoesAba.forEach(botao => {
+        const ativo = botao.dataset.aba === nome;
+        botao.setAttribute("aria-selected", ativo ? "true" : "false");
+        botao.tabIndex = ativo ? 0 : -1;
+        $("aba-" + botao.dataset.aba).hidden = !ativo;
+      });
+
+      try { localStorage.setItem("painelBancada.aba", nome); } catch (e) {}
+
+      renderAba[nome]();
+    }
+
+    botoesAba.forEach((botao, i) => {
+      botao.addEventListener("click", () => mostrarAba(botao.dataset.aba));
+      botao.addEventListener("keydown", evento => {
+        let alvo = null;
+        if (evento.key === "ArrowRight") alvo = botoesAba[(i + 1) % botoesAba.length];
+        if (evento.key === "ArrowLeft") alvo = botoesAba[(i - 1 + botoesAba.length) % botoesAba.length];
+        if (evento.key === "Home") alvo = botoesAba[0];
+        if (evento.key === "End") alvo = botoesAba[botoesAba.length - 1];
+        if (!alvo) return;
+        evento.preventDefault();
+        alvo.focus();
+        mostrarAba(alvo.dataset.aba);
+      });
+    });
+
+    function adicionarOpcoes(select, valores, rotulo = v => v) {
+      valores.forEach(valor => {
+        const opcao = document.createElement("option");
+        opcao.value = valor;
+        opcao.textContent = rotulo(valor);
+        select.append(opcao);
+      });
+    }
+
+    function escolherPadraoMes() {
+      // Último mês com registro no Ano B, pulando o mês corrente se ele
+      // ainda estiver em andamento (para não comparar um mês incompleto).
+      const anoB = $("cmpMesAnoB").value;
+      const meses = (dados.mensal && dados.mensal[anoB]) || [];
+      const hoje = new Date();
+
+      let candidatos = meses.filter(m => m.total > 0);
+      if (String(hoje.getFullYear()) === anoB) {
+        const anteriores = candidatos.filter(m => m.mesOrdem < hoje.getMonth());
+        if (anteriores.length) candidatos = anteriores;
+      }
+
+      if (candidatos.length) $("cmpMes").value = candidatos[candidatos.length - 1].mes;
+    }
+
+    function preencherControles() {
+      const anos = todosAnos.map(a => String(a.ano));
+
+      adicionarOpcoes($("filtroAno"), anos);
+      adicionarOpcoes($("selMensalAno"), anosMensal);
+      adicionarOpcoes($("cmpAnoA"), anos);
+      adicionarOpcoes($("cmpAnoB"), anos);
+      adicionarOpcoes($("cmpMesAnoA"), anosMensal);
+      adicionarOpcoes($("cmpMesAnoB"), anosMensal);
+      adicionarOpcoes($("cmpMes"), CODIGOS_MESES, c => NOMES_MESES[CODIGOS_MESES.indexOf(c)]);
+
+      if (anosMensal.length) $("selMensalAno").value = anosMensal[anosMensal.length - 1];
+
+      const doisUltimos = lista => [
+        lista[Math.max(lista.length - 2, 0)],
+        lista[lista.length - 1]
+      ];
+
+      if (anos.length) {
+        const [a, b] = doisUltimos(anos);
+        $("cmpAnoA").value = a;
+        $("cmpAnoB").value = b;
+      }
+
+      if (anosMensal.length) {
+        const [a, b] = doisUltimos(anosMensal);
+        $("cmpMesAnoA").value = a;
+        $("cmpMesAnoB").value = b;
+        escolherPadraoMes();
+      }
+    }
+
+    function ligarEventos() {
+      $("filtroAno").addEventListener("change", () => {
+        const ano = anoFiltro();
+        if (ano && anosMensal.includes(ano)) $("selMensalAno").value = ano;
+        atualizarEscopos();
+        renderAba[abaAtiva]();
+      });
+
+      $("buscaModelo").addEventListener("input", renderModelos);
+      $("selMensalAno").addEventListener("change", renderMensal);
+      $("chkMetas").addEventListener("change", renderMensal);
+
+      ["cmpAnoA", "cmpAnoB", "chkMesmoPeriodo"].forEach(id =>
+        $(id).addEventListener("change", renderComparacaoAnos)
+      );
+
+      ["cmpMes", "cmpMesAnoA"].forEach(id =>
+        $(id).addEventListener("change", renderComparacaoMes)
+      );
+
+      $("cmpMesAnoB").addEventListener("change", renderComparacaoMes);
+
+      // Troca de tema claro/escuro do sistema: redesenha com as novas cores.
+      const tema = window.matchMedia("(prefers-color-scheme: dark)");
+      const aoTrocarTema = () => renderAba[abaAtiva]();
+      if (tema.addEventListener) tema.addEventListener("change", aoTrocarTema);
+    }
+
+    function mostrarErro(mensagem) {
+      document.body.innerHTML = `
+        <div class="erro">
+          <h1>Bancada de testes</h1>
+          <p class="sub">${esc(mensagem)}</p>
+          <p class="sub">Confira a aba Dados da planilha BancoDados e rode a consolidação novamente.</p>
+        </div>`;
+    }
+
+    function iniciar() {
+      if (dados.erro) return mostrarErro(dados.erro);
+
+      if (CONFIG.exemploBuscaModelo) {
+        $("buscaModelo").placeholder = "Ex.: " + CONFIG.exemploBuscaModelo;
+      }
+
+      if (!todosAnos.length) {
+        return mostrarErro("A aba Dados ainda não tem registros para mostrar.");
+      }
+
+      const atualizado = new Date(dados.atualizadoEm).toLocaleString("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short"
+      });
+
+      const primeiro = todosAnos[0].ano;
+      const ultimo = todosAnos[todosAnos.length - 1].ano;
+
+      $("sub").textContent = primeiro === ultimo
+        ? `Dados de ${primeiro}. Atualizado em ${atualizado}.`
+        : `Dados de ${primeiro} a ${ultimo}. Atualizado em ${atualizado}.`;
+
+      preencherControles();
+      ligarEventos();
+      atualizarEscopos();
+
+      const invalidas = Number(dados.datasInvalidas || 0);
+      $("rodapeDatas").textContent = invalidas
+        ? `Hoje há ${numero(invalidas)} registro(s) com data fora do período aguardando correção na origem.`
+        : "";
+
+      let abaSalva = "geral";
+      try { abaSalva = localStorage.getItem("painelBancada.aba") || "geral"; } catch (e) {}
+
+      mostrarAba(abaSalva);
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>

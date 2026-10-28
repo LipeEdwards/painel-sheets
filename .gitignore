@@ -1,0 +1,10 @@
+# Configuração real da operação: nunca versionar
+src/Config.gs
+Config.gs
+
+# Credenciais e vínculo com o projeto do Apps Script (clasp)
+.clasp.json
+.clasprc.json
+
+node_modules/
+.DS_Store
