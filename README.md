@@ -6,7 +6,7 @@ Construído com **Google Apps Script**, **Google Sheets** e **Chart.js**.
 
 > **Todos os dados deste repositório são fictícios.** Modelos, preços, pessoas e metas foram inventados. O projeto original roda numa operação real de telecom; esta é uma versão pública, com a configuração da operação separada do código e substituída por valores de exemplo.
 
-![Visão geral do painel](docs/img/01-visao-geral.png)
+![Visão geral do painel](docs/01-visao-geral.png)
 
 ## O problema
 
@@ -94,16 +94,12 @@ Com o [clasp](https://github.com/google/clasp) dá para enviar a pasta `src/` di
 
 | | |
 | --- | --- |
-| ![Mês a mês com metas](docs/img/02-mes-a-mes.png) | ![Comparação entre anos](docs/img/03-comparar.png) |
-| ![Modelos](docs/img/04-modelos.png) | ![Retorno à bancada](docs/img/05-retorno.png) |
-| ![Equipe](docs/img/06-equipe.png) | ![Tema escuro](docs/img/07-tema-escuro.png) |
+| ![Mês a mês com metas](docs/02-mes-a-mes.png) | ![Comparação entre anos](docs/03-comparar.png) |
+| ![Modelos](docs/04-modelos.png) | ![Retorno à bancada](docs/05-retorno.png) |
+| ![Equipe](docs/06-equipe.png) | ![Tema escuro](docs/07-tema-escuro.png) |
 
-<img src="docs/img/08-celular.png" alt="Versão para celular" width="260">
+<img src="docs/08-celular.png" alt="Versão para celular" width="260">
 
 ## Tecnologias
 
 Google Apps Script (JavaScript V8) · Google Sheets · HtmlService · Chart.js 4 · MailApp
-
----
-
-Autor: Filipe Edwards
